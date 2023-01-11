@@ -1,16 +1,36 @@
-spring.application.name: order-service
+server:
+  port: '9999'
+spring:
+  application:
+    name: order-service
+  cloud:
+    kafka:
+      binder:
+        brokers: 'localhost:9092'
+    stream:
+      function:
+        definition: orderBuySupplier;orderSellSupplier
+      bindings:
+        orderBuySupplier-out-0:
+          destination: orders.buy
+        orderSellSupplier-out-0:
+          destination: orders.sell
+      kafka:
+        bindings:
+          orderBuySupplier-out-0:
+            producer:
+              configuration:
+                key:
+                  serializer: org.apache.kafka.common.serialization.LongSerializer
+          orderSellSupplier-out-0:
+            producer:
+              configuration:
+                key:
+                  serializer: org.apache.kafka.common.serialization.LongSerializer
+  output:
+    ansi:
+      enabled: ALWAYS
 
-spring.kafka.bootstrap-servers: ${KAFKA_URL}
-
-spring.cloud.stream.function.definition: orderBuySupplier;orderSellSupplier
-
-spring.cloud.stream.bindings.orderBuySupplier-out-0.destination: orders.buy
-spring.cloud.stream.kafka.bindings.orderBuySupplier-out-0.producer.configuration.key.serializer: org.apache.kafka.common.serialization.LongSerializer
-
-spring.cloud.stream.bindings.orderSellSupplier-out-0.destination: orders.sell
-spring.cloud.stream.kafka.bindings.orderSellSupplier-out-0.producer.configuration.key.serializer: org.apache.kafka.common.serialization.LongSerializer
-
-
-spring.output.ansi.enabled: ALWAYS
-
-logging.pattern.console: "%clr(%d{HH:mm:ss.SSS}){blue} %clr(---){faint} %clr([%15.15t]){yellow} %clr(:){red} %clr(%m){faint}%n"
+logging:
+  pattern:
+    console: "%clr(%d{HH:mm:ss.SSS}){blue} %clr(---){faint} %clr([%15.15t]){yellow} %clr(:){red} %clr(%m){faint}%n"

@@ -1,31 +1,59 @@
-spring.application.name: stock-service
+server:
+  port: 9991
+spring:
+  application:
+    name: stock-service
+  cloud:
+    kafka:
+      binder:
+        brokers: 'localhost:9092'
+    stream:
+      function:
+        definition: orders;transactions;total;totalPerProduct;latestPerProduct
+      bindings:
+        orders-in-0:
+          destination: orders.buy
+        orders-in-1:
+          destination: orders.sell
+        transactions-in-0:
+          destination: orders.buy
+        transactions-in-1:
+          destination: orders.sell
+        transactions-out-0:
+          destination: transactions
+        total-in-0:
+          destination: transactions
+        totalPerProduct-in-0:
+          destination: transactions
+        totalPerProduct-in-1:
+          destination: orders.sell
+        latestPerProduct-in-0:
+          destination: transactions
+        latestPerProduct-in-1:
+          destination: orders.sell
+      kafka:
+        streams:
+          binder:
+            functions:
+              orders:
+                applicationId: orders
+              transactions:
+                applicationId: transactions
+              total:
+                applicationId: total
+              totalPerProduct:
+                applicationId: totalPerProduct
+              latestPerProduct:
+                applicationId: latestPerProduct
+  output:
+    ansi:
+      enabled: ALWAYS
+logging:
+  pattern:
+    console: "%clr(%d{HH:mm:ss.SSS}){blue} %clr(---){faint} %clr([%15.15t]){yellow} %clr(:){red} %clr(%m){faint}%n"
 
-spring.kafka.bootstrap-servers: ${KAFKA_URL}
-
-spring.cloud.stream.function.definition: orders;transactions;total;totalPerProduct;latestPerProduct
-
-spring.cloud.stream.bindings.orders-in-0.destination: orders.buy
-spring.cloud.stream.bindings.orders-in-1.destination: orders.sell
-spring.cloud.stream.kafka.streams.binder.functions.orders.applicationId: orders
-
-spring.cloud.stream.bindings.transactions-in-0.destination: orders.buy
-spring.cloud.stream.bindings.transactions-in-1.destination: orders.sell
-spring.cloud.stream.bindings.transactions-out-0.destination: transactions
-spring.cloud.stream.kafka.streams.binder.functions.transactions.applicationId: transactions
-
-spring.cloud.stream.bindings.total-in-0.destination: transactions
-spring.cloud.stream.kafka.streams.binder.functions.total.applicationId: total
-
-spring.cloud.stream.bindings.totalPerProduct-in-0.destination: transactions
-spring.cloud.stream.bindings.totalPerProduct-in-1.destination: orders.sell
-spring.cloud.stream.kafka.streams.binder.functions.totalPerProduct.applicationId: totalPerProduct
-
-spring.cloud.stream.bindings.latestPerProduct-in-0.destination: transactions
-spring.cloud.stream.bindings.latestPerProduct-in-1.destination: orders.sell
-spring.cloud.stream.kafka.streams.binder.functions.latestPerProduct.applicationId: latestPerProduct
-
-spring.output.ansi.enabled: ALWAYS
-
-logging.pattern.console: "%clr(%d{HH:mm:ss.SSS}){blue} %clr(---){faint} %clr([%15.15t]){yellow} %clr(:){red} %clr(%m){faint}%n"
-
-management.endpoints.web.exposure.include: "*"
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '"*"'
