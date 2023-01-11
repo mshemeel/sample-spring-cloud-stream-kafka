@@ -22,3 +22,6 @@
 
 9. to list all the topics in kafka
 - kafka-topics --list --bootstrap-server kafka:9092
+
+# Reference :
+https://piotrminkowski.com/2021/11/11/kafka-streams-with-spring-cloud-stream/
